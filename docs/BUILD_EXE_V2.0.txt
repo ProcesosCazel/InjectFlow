@@ -1,0 +1,39 @@
+CONSTRUCCION DEL EJECUTABLE - INJECTFLOW v2.0
+
+METODO OFICIAL
+Ejecutar CONSTRUIR_EXE_V2.0.bat desde la raiz del proyecto en Windows.
+
+EL SCRIPT REALIZA
+1. Valida Python 64 bits y archivos de release.
+2. Crea .venv_build aislado.
+3. Instala requirements-build.txt.
+4. Ejecuta pytest (21 pruebas esperadas).
+5. Verifica imports, Excel COM, catalogos y plantillas.
+6. Ejecuta PyInstaller con InjectFlow.spec.
+7. Prepara una distribucion onedir.
+8. Coloca Data.xlsx, Mapeo.xlsx, plantillas y web junto al .exe.
+9. Deja input/ y output/ vacios.
+10. Verifica integridad de la distribucion.
+11. Genera ZIP de distribucion.
+
+SALIDA ESPERADA
+- dist/AutomatizacionParametros_v2.0/InjectFlow.exe
+- dist/AutomatizacionParametros_v2.0.zip
+
+POR QUE ONEDIR
+Los archivos maestros y la interfaz se mantienen externos al ejecutable. Esto respeta el runtime_root actual y permite mantener Data.xlsx, Mapeo.xlsx, plantillas y web sin recompilar el binario.
+
+PRUEBA FINAL OBLIGATORIA
+- Abrir InjectFlow.exe.
+- Generar con una Gen V real.
+- Generar con una Gen III real.
+- Probar Solo Param.dat.
+- Probar Vista Previa.
+- Probar Historial, Abrir hoja, Abrir carpeta y Borrar historial.
+- Repetir smoke test en una computadora limpia sin Python instalado.
+
+
+NOTA RC1.2 - PYWIN32 / EXCEL COM
+InjectFlow.spec incluye explicitamente win32timezone como hidden import.
+PyInstaller puede no detectar este modulo porque pywin32 lo carga dinamicamente en runtime.
+El preflight verifica esta condicion antes de construir el ejecutable.

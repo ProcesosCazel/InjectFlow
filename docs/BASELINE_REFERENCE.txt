@@ -1,0 +1,9 @@
+BASELINE DE ORIGEN
+
+Proyecto origen: AutomatizacionParametros_v1.3
+Snapshot oficial: AutomatizacionParametros_v1.3_FROZEN.zip
+SHA-256 del snapshot v1.3:
+cf8b5b3548b60fa76527834e3134bcccdea24775df179946c2322f4866b988e7
+
+Regla de trabajo:
+La baseline v1.3 congelada no se modifica. Todo desarrollo nuevo se realiza en AutomatizacionParametros_v2.

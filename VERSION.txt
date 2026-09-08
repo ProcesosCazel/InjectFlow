@@ -1,0 +1,24 @@
+InjectFlow / AutomatizacionParametros v2.0 - RELEASE CANDIDATE RC1.3
+Fecha de preparacion RC1.3: 2026-09-08
+Base de origen: AutomatizacionParametros v1.3
+Interfaz: PyWebView
+API bridge: 1.10
+
+ALCANCE CONGELADO v2.0
+- Haitian Zeres Gen V - Nave 1
+- Haitian Zeres Gen III - Nave 1
+- 26 maquinas actualmente catalogadas en Mapeo.xlsx
+- Param.dat + Resul.csv opcional
+- Modo Solo Param.dat
+- Drag & Drop y selector nativo de archivos
+- Generacion oficial mediante Microsoft Excel
+- Historial de generacion
+- Vista previa real
+- Abrir hoja de la sesion actual
+- Apertura de hojas anteriores exclusivamente desde Historial
+
+ESTADO DE RELEASE
+- Codigo fuente congelado para RC1.3.
+- Motor app/ y archivos maestros no deben modificarse salvo correccion de bug bloqueante.
+- Pendiente para liberar como FINAL: construir InjectFlow.exe en Windows, ejecutar smoke test del ejecutable y validar en una computadora limpia.
+- Las maquinas 215, 216, 302, 304, 308B, 309 y 310 quedan fuera de v2.0 y se implementaran en AutomatizacionParametros_v2.1.

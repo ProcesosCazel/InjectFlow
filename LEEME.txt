@@ -1,0 +1,47 @@
+INJECTFLOW / AUTOMATIZACIONPARAMETROS v2.0 - RELEASE CANDIDATE RC1
+
+Aplicacion para automatizar la generacion de hojas de parametros de proceso de maquinas de inyeccion.
+La version 2.0 conserva el motor validado de v1.3 y utiliza una interfaz PyWebView.
+
+ALCANCE v2.0
+- Haitian Zeres Gen V - Nave 1.
+- Haitian Zeres Gen III - Nave 1.
+- 26 maquinas catalogadas.
+- Param.dat obligatorio.
+- Resul.csv opcional; su ausencia activa automaticamente Solo Param.dat.
+- Vista previa, historial, apertura de carpeta y apertura de hoja generada en la sesion actual.
+
+REQUISITOS DE EJECUCION DEL .EXE
+- Windows 10/11 de 64 bits.
+- Microsoft Excel de escritorio instalado.
+- Microsoft Edge WebView2 Runtime disponible.
+- No se requiere Python en la computadora donde se ejecuta la distribucion final.
+
+ESTRUCTURA DEL CODIGO FUENTE
+- app/             Motor de reglas y generacion.
+- data/            Data.xlsx y Mapeo.xlsx maestros.
+- plantillas/      Plantillas oficiales Gen V y Gen III.
+- web/             Interfaz InjectFlow.
+- tests/           Regresion automatizada.
+- release_tools/   Herramientas para construir y verificar la release.
+- input/           Carpeta reservada para entradas.
+- output/          Carpeta de archivos generados.
+- dist/            Salida del proceso de build.
+
+EJECUCION DESDE CODIGO FUENTE
+1. Ejecutar INSTALAR_DEPENDENCIAS.bat.
+2. Ejecutar: py launcher_web.py
+
+CREACION DEL EJECUTABLE
+Ejecutar en Windows:
+    CONSTRUIR_EXE_V2.0.bat
+
+El script crea un entorno de build aislado, instala dependencias, ejecuta las 21 pruebas de regresion, valida el entorno, construye el ejecutable con PyInstaller y prepara:
+    dist/AutomatizacionParametros_v2.0/InjectFlow.exe
+    dist/AutomatizacionParametros_v2.0.zip
+
+IMPORTANTE
+- No modificar Data.xlsx, Mapeo.xlsx ni las plantillas en la rama v2.0 salvo correccion autorizada.
+- Las hojas antiguas solo se abren desde Historial.
+- Borrar Historial elimina registros, no los .xlsx de output/.
+- Las maquinas de Nave 2 y Nave 3 quedan reservadas para v2.1.

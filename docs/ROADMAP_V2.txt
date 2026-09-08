@@ -1,0 +1,35 @@
+CIERRE DE RELEASE - INJECTFLOW / AUTOMATIZACIONPARAMETROS v2.0
+Actualizado: 2026-09-08
+
+ALCANCE CONGELADO
+- Haitian Zeres Gen V - Nave 1.
+- Haitian Zeres Gen III - Nave 1.
+- Interfaz PyWebView completa.
+- Generacion, Vista Previa, Historial y flujo Solo Param.dat.
+
+HITOS v2.0 COMPLETADOS
+1. Baseline v1.3 congelada.
+2. Estructura v2 separada.
+3. PyWebView integrado.
+4. Loading screen integrado.
+5. Home HTML/CSS/JS.
+6. API JavaScript <-> Python.
+7. Selectores manuales.
+8. Drag & Drop / selector de archivos.
+9. Generacion real de hoja de parametros.
+10. Historial.
+11. Vista Previa real.
+12. Auditoria Haitian Zeres Gen V.
+13. Auditoria Haitian Zeres Gen III.
+14. Limpieza y preparacion de Release Candidate v2.0.
+
+PENDIENTE PARA PROMOVER RC1 A RELEASE FINAL
+15. Construir InjectFlow.exe en Windows.
+16. Smoke test del ejecutable generado.
+17. Validacion real con al menos una Gen V y una Gen III usando el .exe.
+18. Prueba en computadora limpia sin entorno Python de desarrollo.
+19. Liberar AutomatizacionParametros_v2.0 FINAL.
+
+FUERA DE ALCANCE v2.0
+Las maquinas 215, 216, 302, 304, 308B, 309 y 310 no se incorporaran a esta release.
+Su analisis e integracion pertenecen a AutomatizacionParametros_v2.1.

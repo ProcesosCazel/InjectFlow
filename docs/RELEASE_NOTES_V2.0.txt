@@ -1,0 +1,43 @@
+RELEASE NOTES - INJECTFLOW / AUTOMATIZACIONPARAMETROS v2.0 RC1.3
+Fecha: 2026-09-08
+
+NOVEDADES PRINCIPALES RESPECTO A v1.3
+- Nueva interfaz InjectFlow basada en HTML/CSS/JavaScript dentro de PyWebView.
+- Loading screen nativo en Python.
+- Drag & Drop y selector nativo de archivos.
+- Resul.csv opcional con deteccion automatica de Solo Param.dat.
+- Generacion real conectada al motor Python validado.
+- Barra de progreso con modo indeterminado durante la fase larga de Excel.
+- Historial integrado en la interfaz, con apertura de hojas anteriores y borrado de registros.
+- Vista previa real de la hoja generada durante la sesion actual.
+- Boton Abrir hoja habilitado solo despues de generar en la sesion actual.
+- Acciones principales organizadas en layout 2x2.
+- Dialogos de exito, advertencia, error, confirmacion y procesamiento.
+- Soporte responsive y modo oscuro del sistema.
+
+FAMILIAS SOPORTADAS EN v2.0
+- Haitian Zeres Gen V - Nave 1.
+- Haitian Zeres Gen III - Nave 1.
+
+VALIDACIONES
+- Regresion automatizada: 21 pruebas.
+- Auditoria automatica Gen V: completada.
+- Auditoria automatica Gen III: completada.
+- La aceptacion final de RC1 requiere prueba del .exe con datos reales Gen V y Gen III y una computadora limpia.
+
+DIFERIDO A v2.1
+- 215, 216, 310.
+- 308B, 309.
+- 302, 304.
+
+
+CORRECCION RC1.2
+- Corregido empaquetado PyInstaller de pywin32: win32timezone se incluye como hidden import.
+- El preflight ahora valida la disponibilidad de win32timezone y su declaracion en InjectFlow.spec.
+- Esta correccion resuelve el fallo runtime: No module named 'win32timezone' durante operaciones COM de Excel.
+
+
+CORRECCION RC1.3
+- La seccion Detalles del popup de generacion tiene ahora una altura maxima responsiva y scroll vertical interno.
+- En pantallas pequenas o de poca altura, la informacion ya no se corta y el footer del popup permanece accesible.
+- Ajuste exclusivamente visual; no modifica el motor, la generacion Excel, Data.xlsx, Mapeo.xlsx ni las plantillas.

@@ -1,0 +1,32 @@
+ROADMAP PRELIMINAR - AUTOMATIZACIONPARAMETROS v2.1
+
+OBJETIVO
+Agregar maquinas de Nave 2 y Nave 3 sin modificar el comportamiento congelado de v2.0.
+
+FAMILIAS PRELIMINARES
+1. Haitian Zeres Gen III con nueva plantilla/tolerancias:
+   - 215
+   - 216
+   - 310
+   Entrada prevista: Param.dat + Resul.csv opcional.
+
+2. Maquinas especiales de doble inyeccion:
+   - 308B
+   - 309
+   Entrada programada: XML.
+   Resultantes: TXT.
+   Requieren parser, Data y plantilla/mapeo especificos.
+
+3. Familia KPDSA:
+   - 302
+   - 304
+   Entrada programada: .kpdsa.
+   Requiere primero analizar formato/encoding, luego parser, Data y plantilla/mapeo especificos.
+
+ORDEN RECOMENDADO
+A. Congelar baseline v2.0 FINAL.
+B. Integrar 215/216/310.
+C. Analizar e integrar 308B/309.
+D. Analizar e integrar 302/304.
+E. Adaptar Home a tipos de archivo por familia.
+F. Regresion integral de todas las familias.

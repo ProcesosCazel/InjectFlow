@@ -1,0 +1,57 @@
+SMOKE TEST OBLIGATORIO - INJECTFLOW v2.0 RC1
+
+OBJETIVO
+Validar el ejecutable generado antes de promover RC1 a RELEASE FINAL.
+
+A. ARRANQUE
+[ ] Ejecutar dist/AutomatizacionParametros_v2.0/InjectFlow.exe.
+[ ] Aparece loading screen.
+[ ] Abre Home sin terminal visible.
+[ ] Logo, estilos, selectores y botones se muestran correctamente.
+[ ] Vista previa y Abrir hoja inician deshabilitados.
+
+B. ARCHIVOS
+[ ] Param.dat por boton Subir archivo.
+[ ] Param.dat por Drag & Drop.
+[ ] Resul.csv por boton Subir archivo.
+[ ] Resul.csv por Drag & Drop.
+[ ] Quitar funciona en ambos.
+[ ] Extension incorrecta es rechazada.
+
+C. GENERACION GEN V
+[ ] Seleccionar una maquina Gen V real.
+[ ] Generar con Param.dat + Resul.csv.
+[ ] Popup de exito aparece.
+[ ] Abrir hoja abre el Excel recien generado.
+[ ] Vista previa muestra la hoja.
+[ ] Revisar cores, Valve Gates, HRS, SuckBack y PreRelease segun el caso real.
+
+D. GENERACION GEN III
+[ ] Seleccionar una maquina Gen III real.
+[ ] Generar en Solo Param.dat.
+[ ] No solicita Resul.csv.
+[ ] Popup de exito aparece.
+[ ] Abrir hoja y Vista previa funcionan.
+[ ] Revisar core unico, HRS y SuckBack.
+
+E. HISTORIAL
+[ ] Las generaciones aparecen en Historial.
+[ ] Una hoja anterior se abre desde Historial.
+[ ] Borrar historial pide confirmacion.
+[ ] Borrar historial no elimina los .xlsx de output/.
+
+F. REINICIO DE SESION
+[ ] Cerrar InjectFlow.
+[ ] Abrir nuevamente.
+[ ] Abrir hoja vuelve a estar deshabilitado.
+[ ] Vista previa vuelve a estar deshabilitada.
+[ ] Hojas anteriores siguen disponibles solo desde Historial.
+
+G. COMPUTADORA LIMPIA
+[ ] Copiar la carpeta completa AutomatizacionParametros_v2.0 a una PC sin Python de desarrollo.
+[ ] Confirmar Microsoft Excel instalado.
+[ ] Ejecutar InjectFlow.exe.
+[ ] Repetir una generacion y Vista previa.
+
+CRITERIO DE LIBERACION
+Todos los puntos aplicables deben quedar aprobados. Cualquier bug bloqueante debe corregirse en RC1/RC2 antes de marcar VERSION.txt como RELEASE FINAL.
