@@ -9,7 +9,7 @@ La versión **2.0.0** representa la primera release estable de la interfaz Injec
 > **Estado:** FINAL RELEASE  
 > **Versión:** 2.0.0  
 > **Plataforma principal:** Windows  
-> **Uso del repositorio:** educativo, colaboración interna y referencia técnica
+> **Uso del repositorio:** referencia técnica
 
 ---
 
