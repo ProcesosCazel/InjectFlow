@@ -528,7 +528,7 @@ La incorporación de nuevas máquinas y nuevos formatos de entrada no forma part
 ## 1. Ing. Hector Uriel Ramirez Sandoval
 ### Auxiliar de robot | Industrias Cazel
 **uramirez@cazel.mx**
----
+
 ## 2. Ing. José Antonio Guzmán Trujillo
 ### Becario de Procesos | Industrias Cazel
 **tecnicosprocesos@cazel.mx**
