@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-title InjectFlow v3.0 - Crear EXE
+title InjectFlow v2.2 - Crear EXE
 
 set "PYTHONUTF8=1"
 set "PYTHONIOENCODING=utf-8"
@@ -11,7 +11,7 @@ set "APP_DIST=dist\InjectFlow"
 
 echo.
 echo ============================================================
-echo   InjectFlow v3.0 - Build Windows
+echo   InjectFlow v2.2 - Build Windows
 echo ============================================================
 echo.
 
@@ -36,7 +36,7 @@ if errorlevel 1 (
 py -3.14 -c "import sys; assert sys.maxsize == 9223372036854775807; print(sys.version)" >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] No se encontro Python 3.14 de 64 bits.
-    echo InjectFlow v3.0 se construye con Python 3.14 x64.
+    echo InjectFlow v2.2 se construye con Python 3.14 x64.
     goto :fail
 )
 
@@ -107,7 +107,7 @@ copy /y "data\Moldes.xlsx" "%APP_DIST%\data\Moldes.xlsx" >nul
 if errorlevel 1 goto :fail
 copy /y "VERSION.txt" "%APP_DIST%\VERSION.txt" >nul
 if errorlevel 1 goto :fail
-copy /y "DEVELOPMENT_NOTES_v3.0.txt" "%APP_DIST%\DEVELOPMENT_NOTES_v3.0.txt" >nul
+copy /y "RELEASE_NOTES_v2.2.txt" "%APP_DIST%\RELEASE_NOTES_v2.2.txt" >nul
 if errorlevel 1 goto :fail
 
 robocopy "plantillas" "%APP_DIST%\plantillas" *.xlsx /E /NFL /NDL /NJH /NJS /NP >nul
@@ -127,7 +127,7 @@ if not exist "%APP_DIST%\data\Data.xlsx" goto :invalid_dist
 if not exist "%APP_DIST%\data\Mapeo.xlsx" goto :invalid_dist
 if not exist "%APP_DIST%\data\Moldes.xlsx" goto :invalid_dist
 if not exist "%APP_DIST%\VERSION.txt" goto :invalid_dist
-if not exist "%APP_DIST%\DEVELOPMENT_NOTES_v3.0.txt" goto :invalid_dist
+if not exist "%APP_DIST%\RELEASE_NOTES_v2.2.txt" goto :invalid_dist
 if not exist "%APP_DIST%\web\index.html" goto :invalid_dist
 if not exist "%APP_DIST%\web\js\main.js" goto :invalid_dist
 if not exist "%APP_DIST%\web\css\styles.css" goto :invalid_dist
