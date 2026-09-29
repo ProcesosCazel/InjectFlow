@@ -1,0 +1,53 @@
+INJECTFLOW v3 - JUPITER: TOLERANCIAS FIJAS
+Fecha: 2026-09-28
+
+BASE
+Aplicar sobre v3 con JupiterXmlParser y el delta Jupiter Solo Parametros ya instalados.
+No aplicar sobre v2.4. No es un release completo ni un ejecutable.
+
+REGLA
+Las tolerancias superiores e inferiores del barril permanecen exactamente como estan
+escritas en la plantilla. No se leen del XML para normalizarlas ni se escriben o limpian
+sus celdas durante el plan de mapeo. No se reemplazan por un valor uniforme.
+
+ARCHIVOS DE PRODUCCION PARA REEMPLAZAR
+- data/Data.xlsx
+- data/Mapeo.xlsx
+- app/jupiter_xml_parser.py
+
+CAMBIO
+Se retiraron las 20 claves Jupiter.BarrelXZoneNUpperTol / LowerTol:
+X=1,2; N=1..5; dos tolerancias por zona.
+Data.Param: 20 reglas menos. Data.Jupiter: 20 entradas de trazabilidad menos.
+Mapeo.Mapping: 20 destinos de tolerancia menos; IDs restantes sin renumerar.
+Parser: deja de emitir las 20 claves normalizadas. Conserva lectura del XML bruto
+para diagnostico; ese diccionario no se envia a Excel como tolerancias.
+Se mantienen BarrelXZoneNTemp y BarrelXZoneNMode.
+
+PLANTILLA
+No se incluye ni se modifica. Conservar la plantilla del paso Solo Parametros.
+La comparacion binaria confirma que esta intacta, incluida AC67 con IFERROR.
+Tampoco se corrigen tolerancias numericas de la plantilla en este cambio.
+
+CONSERVADO
+866 reglas Param Jupiter.
+875 registros Mapping Jupiter: 866 Param + 6 Mold + 3 Manual.
+2090 mappings de otras familias intactos.
+7 reglas Resul de Zeres intactas. Jupiter sigue sin mappings Resul.
+308B/309 siguen XML_ONLY e inactivas; no se conecta aun el flujo principal.
+No cambia DataResolver, PlanBuilder, Excel Writer, UI, Moldes.xlsx ni las plantillas.
+
+PRUEBAS
+80 pruebas aprobadas: 73 heredadas (con expectativas de conteo actualizadas) + 7 nuevas.
+Las pruebas nuevas verifican ausencia de tolerancias normalizadas, indiferencia
+ante valores XML distintos/ausentes/no numericos, setpoints/estados conservados,
+coherencia de ambos catalogos y ausencia de destinos sobre los rangos de tolerancia.
+Con el XML real 1689, las otras 864 claves normalizadas son identicas al parser previo.
+Los dos CoolPreventTime y las advertencias previas del parser siguen pendientes;
+no se resuelven ni se ocultan en este cambio.
+No se realizo generacion real con Excel COM/Windows.
+
+INSTALACION
+Cerrar InjectFlow y Excel. Respaldar el proyecto v3. Extraer este delta en su raiz
+respetando las carpetas app, data y tests. Reemplazar los archivos indicados.
+Los tests se ejecutan con: python -m pytest -q

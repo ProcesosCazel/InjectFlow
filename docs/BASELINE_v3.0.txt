@@ -1,0 +1,39 @@
+INJECTFLOW v3.0 - BASELINE DE RELEASE
+=====================================
+
+RELEASE
+InjectFlow v3.0.0 - Release 3.0
+Fecha: 2026-09-29
+
+BASE HEREDADA
+InjectFlow v2.4 FINAL RELEASE mas el bugfix posterior de HRS legacy 124A.
+
+MAQUINAS ZERES ACTIVAS
+Gen V:
+112C, 114B, 114C, 124A, 125A, 126A, 129, 130
+
+Gen III_500:
+101B, 102B, 103A, 104B, 105A, 106B, 107C, 108C, 111B, 111C,
+113C, 115B, 116C, 117B, 123B, 127, 128, 131
+
+Gen III_800:
+215B, 216A
+
+Gen III_1080:
+310B
+
+MAQUINAS JUPITER TWOSHOT ACTIVAS
+- 308B
+- 309
+
+JUPITER
+- TEMPLATE GROUP: HAITIAN_JUPITER_TWOSHOT
+- LAYOUT: JUPITER_TWOSHOT_1080_V1
+- Plantilla: Haitian Jupiter TwoShot_1080.xlsx
+- Modo: XML-only / parameter-only
+- Unica entrada del usuario: XML del molde
+
+VALIDACION FINAL
+- 134 pruebas automatizadas PASS.
+- 308B I-1689: 0 advertencias, 0 parametros faltantes.
+- 309 I-1695: 0 advertencias, 0 parametros faltantes.

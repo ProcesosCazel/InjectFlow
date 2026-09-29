@@ -1,0 +1,55 @@
+INJECTFLOW v3.0 - RELEASE 3.0
+=============================
+Fecha de release: 2026-09-29
+Version de producto: 3.0.0
+
+RESUMEN
+- Release final de InjectFlow v3.0.
+- Integra soporte productivo de Haitian Jupiter TwoShot 308B y 309.
+- Conserva soporte validado para Haitian Zeres Gen V y Gen III.
+
+JUPITER 308B / 309
+- Flujo XML-only: el usuario carga unicamente el XML del molde.
+- Parser Jupiter reconstruido con constantes oficiales por maquina.
+- Las constantes de 308B y 309 estan embebidas en data/Data.xlsx.
+- El numero de molde capturado por el usuario no se valida contra el XML ni
+  contra Moldes.xlsx.
+- Plantilla final bloqueada: Haitian Jupiter TwoShot_1080.xlsx.
+- G17 = referencia de campo activo/sin relleno.
+- G20 = referencia de campo inactivo/#7F7F7F.
+- Las etiquetas fijas 1, 2, 3, End pertenecen a la plantilla y no se escriben
+  desde el planner.
+- Clamp Force, Max Mold Release Pressure y Rotary Fast Pressure se resuelven
+  automaticamente con la logica validada.
+- Rotary Fast Velocity permanece manual/no automatizado.
+
+INTERPRETACION POR MAQUINA
+308B
+- Injection/Hold usa transformacion relativa de velocidad HMI.
+- Decompression usa conversion relativa validada para la maquina.
+- Charge usa transformacion de rotacion relativa.
+
+309
+- Injection/Hold usa transformacion absoluta de velocidad HMI.
+- Decompression activa usa conversion directa validada.
+- Charge usa transformacion RPM.
+
+ZERES
+- Sin cambios funcionales respecto de la ultima base validada v2.4 + bugfix
+  de HRS legacy 124A.
+
+ARCHIVOS DE DATOS Y PLANTILLAS
+- data/Data.xlsx
+- data/Mapeo.xlsx
+- data/Moldes.xlsx
+- plantillas/Haitian Jupiter TwoShot_1080.xlsx
+- plantillas/Haitian Zeres Gen V.xlsx
+- plantillas/Haitian Zeres Gen III_500.xlsx
+- plantillas/Haitian Zeres Gen III_800.xlsx
+- plantillas/Haitian Zeres Gen III_1080.xlsx
+
+PRUEBAS AUTOMATIZADAS
+- Jupiter: 73 PASS.
+- Heredadas / Zeres: 57 PASS.
+- Preview: 4 PASS.
+- Total: 134 PASS.

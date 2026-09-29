@@ -1,0 +1,27 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Archivos temporales
+*.tmp
+*.log
+~$*.xlsx
+
+# Salidas generadas
+output/*
+
+# Builds locales
+build/
+dist/
+
+# Sistema / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

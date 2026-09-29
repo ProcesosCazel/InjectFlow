@@ -1,0 +1,8 @@
+InjectFlow v3.0.0
+Release label: RELEASE 3.0
+Release date: 2026-09-29
+Status: FINAL
+
+Validation: 134 automated tests PASS.
+Jupiter 308B/309 enabled for normal XML-only generation.
+Zeres functionality retained.

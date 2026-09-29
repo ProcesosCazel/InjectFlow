@@ -1,0 +1,46 @@
+INJECTFLOW v3.0 - RELEASE 3.0
+=============================
+
+Version final completa del proyecto para generacion de hojas de parametros
+de proceso de maquinas Haitian Zeres y Haitian Jupiter TwoShot.
+
+JUPITER 308B / 309
+- Ambas maquinas estan habilitadas en el selector normal.
+- Unica entrada de proceso: XML del molde.
+- No usa Resul.csv para Jupiter.
+- No requiere seleccionar control de inyeccion.
+- Las constantes de cada maquina estan integradas en data/Data.xlsx.
+- Plantilla final bloqueada: plantillas/Haitian Jupiter TwoShot_1080.xlsx.
+- El numero de molde capturado por el usuario es autoritativo; no se valida
+  contra el XML ni contra Moldes.xlsx.
+- Las etiquetas 1, 2, 3, End de Injection/Hold pertenecen a la plantilla y
+  el programa no las escribe ni las limpia.
+- G17 es la referencia de campo activo/sin relleno.
+- G20 es la referencia de campo inactivo con relleno #7F7F7F.
+- Rotary Fast Velocity permanece manual/no automatizado por falta de una
+  fuente validada.
+
+ZERES
+- Se conserva la funcionalidad validada de la familia Zeres Gen V y Gen III.
+- Se conserva el bugfix historico de HRS para 124A.
+
+ARRANQUE
+1. Ejecuta ABRIR_INJECTFLOW.bat.
+2. Selecciona la maquina.
+3. Carga el archivo de parametros solicitado por la aplicacion.
+4. Captura el numero de molde deseado.
+5. Genera la hoja y revisa el archivo de salida.
+
+DEPENDENCIAS
+- INSTALAR_DEPENDENCIAS.bat instala las dependencias Python necesarias.
+- CREAR_INJECTFLOW_EXE.bat conserva el flujo de empaquetado a ejecutable.
+
+VALIDACION DE RELEASE
+- Jupiter: 73 pruebas PASS.
+- Heredadas / Zeres: 57 pruebas PASS.
+- Preview: 4 pruebas PASS.
+- Total: 134 pruebas PASS.
+- Validacion real 308B / I-1689: 0 advertencias, 0 parametros faltantes.
+- Validacion real 309 / I-1695: 0 advertencias, 0 parametros faltantes.
+
+Consulta docs/RELEASE_NOTES_V3.0.txt y docs/VALIDACION_RELEASE_V3.0.txt.

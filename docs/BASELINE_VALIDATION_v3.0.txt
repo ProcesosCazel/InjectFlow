@@ -1,0 +1,41 @@
+INJECTFLOW v3.0 - VALIDACION DEL RELEASE
+========================================
+Fecha: 2026-09-29
+
+REGRESION AUTOMATIZADA
+- Jupiter: 73 PASS
+- Heredadas / Zeres: 57 PASS
+- Preview: 4 PASS
+- Total: 134 PASS
+
+VALIDACION REAL JUPITER
+308B / I-1689
+- XML real de maquina.
+- Plan final sin advertencias de proceso.
+- Parametros faltantes: 0.
+- Se validaron Mold Close, Mold Open, Injection/Hold U1/U2, Transfer,
+  Charge, Decompression, Cores, Rotary, Valve Gates, Barriles y HRS.
+
+309 / I-1695
+- XML real de maquina.
+- Plan final sin advertencias de proceso.
+- Parametros faltantes: 0.
+- Se validaron Mold Close, Mold Open, Injection/Hold U1/U2, Transfer,
+  Charge, Decompression, Cores, Rotary, Valve Gates, Barriles y HRS.
+
+PLANTILLA JUPITER FINAL
+- Archivo: plantillas/Haitian Jupiter TwoShot_1080.xlsx
+- SHA-256: 98359b2edd83ac46b5192b3b78ba7ca49a28da051c315e175dd9fa696e39df40
+- Area de impresion: A1:CV89
+- G17: campo activo / sin relleno
+- G20: campo inactivo / #7F7F7F
+- Etiquetas 1,2,3,End integradas en la plantilla y no reescritas por codigo.
+
+PENDIENTE CONOCIDO
+- Rotary Fast Velocity permanece manual/no automatizado hasta disponer de una
+  fuente validada.
+
+PLAN FINAL DE RELEASE
+- 308B / I-1689: 693 operaciones planeadas.
+- 309 / I-1695: 753 operaciones planeadas.
+- Ambos casos: 0 advertencias y 0 parametros faltantes.
