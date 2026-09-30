@@ -8,9 +8,11 @@ Su objetivo principal es reducir tiempo de captura, evitar errores manuales y ma
 
 > **Versión actual:** InjectFlow v3.0.0 — Release 3.0  
 > **Repositorio:** https://github.com/ProcesosCazel/InjectFlow  
-> **Autor:** Ing. José Antonio Guzmán Trujillo  
-> **Cargo:** Becario de Procesos  
-> **Contacto:** tecnicosprocesos@cazel.mx
+
+## Autor:
+-- **Ing. José Antonio Guzmán Trujillo**  
+-- **Becario de Procesos**  
+-- **tecnicosprocesos@cazel.mx**
 
 ---
 
