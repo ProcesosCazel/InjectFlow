@@ -1,8 +1,10 @@
 # InjectFlow
 
-**InjectFlow** es una aplicación de escritorio desarrollada en Python para automatizar la generación de hojas de parámetros de proceso de máquinas de inyección Haitian.
+**InjectFlow** es una aplicación de escritorio desarrollada en Python para automatizar la generación de hojas de parámetros de proceso en máquinas de inyección de plástico.
 
-El sistema interpreta los archivos de parámetros descargados directamente de la máquina, convierte los valores internos a las unidades mostradas en el HMI y escribe automáticamente la información en plantillas Excel estandarizadas.
+El proyecto interpreta archivos de parámetros descargados directamente de las máquinas, aplica reglas de conversión y lógica de proceso, y escribe automáticamente los resultados en plantillas Excel estandarizadas.
+
+Su objetivo principal es reducir tiempo de captura, evitar errores manuales y mantener un formato uniforme para las hojas de parámetros utilizadas en producción.
 
 > **Versión actual:** InjectFlow v3.0.0 — Release 3.0  
 > **Repositorio:** https://github.com/ProcesosCazel/InjectFlow  
@@ -12,153 +14,133 @@ El sistema interpreta los archivos de parámetros descargados directamente de la
 
 ---
 
-## Objetivo
+## Objetivo del proyecto
 
-Reducir el tiempo y los errores asociados con la elaboración manual de hojas de parámetros de proceso, manteniendo una estructura de Excel estandarizada para distintas generaciones y configuraciones de máquinas Haitian.
+InjectFlow fue creado para sustituir la captura manual de parámetros de proceso en Excel por un flujo automatizado y repetible.
 
-InjectFlow automatiza, entre otros:
+El sistema permite:
 
-- Apertura y cierre de molde.
-- Protección de molde.
-- Inyección.
-- Sostenimiento.
-- Transferencia.
-- Dosificación / carga.
-- Descompresión.
-- Temperaturas de barril.
-- Hot Runner System (HRS).
-- Valve Gates.
-- Cores.
-- Mesa rotatoria en máquinas TwoShot.
-- Datos generales de molde y máquina.
-- Activación, desactivación y sombreado dinámico de campos.
-- Total dinámico de zonas HRS.
+- Seleccionar la máquina de inyección.
+- Cargar el archivo de parámetros correspondiente.
+- Interpretar los valores internos de la máquina.
+- Convertirlos a las unidades mostradas en el HMI.
+- Aplicar reglas específicas por familia o modelo de máquina.
+- Activar o desactivar secciones según la configuración real del proceso.
+- Escribir los valores en la plantilla correcta.
+- Conservar formato, celdas combinadas, sombreado y área de impresión.
+- Generar una hoja final lista para revisión, impresión o resguardo.
 
 ---
 
-## Máquinas y familias soportadas
+## Alcance actual
+
+InjectFlow soporta actualmente diferentes configuraciones de máquinas Haitian, incluyendo:
 
 ### Haitian Zeres
-
-El proyecto conserva soporte para las familias previamente validadas:
 
 - Haitian Zeres Gen V.
 - Haitian Zeres Gen III 500.
 - Haitian Zeres Gen III 800.
 - Haitian Zeres Gen III 1080.
 
-Las plantillas correspondientes se encuentran en:
+### Haitian Jupiter
 
-```text
-plantillas/
-├── Haitian Zeres Gen V.xlsx
-├── Haitian Zeres Gen III_500.xlsx
-├── Haitian Zeres Gen III_800.xlsx
-└── Haitian Zeres Gen III_1080.xlsx
-```
+- Haitian Jupiter TwoShot 1080.
+- Máquinas actualmente validadas: 308B y 309.
 
-### Haitian Jupiter TwoShot
-
-A partir de Release 3.0 se agregó soporte para:
-
-- Máquina **308B**.
-- Máquina **309**.
-
-Plantilla:
-
-```text
-plantillas/Haitian Jupiter TwoShot_1080.xlsx
-```
-
-Para Jupiter, la entrada de proceso es únicamente el archivo `.xml` del molde.
-
-Las constantes físicas y de conversión de cada máquina están integradas internamente en el proyecto; el operador no necesita descargar archivos adicionales de configuración para generar cada hoja.
+La arquitectura del proyecto permite incorporar nuevas máquinas, generaciones y plantillas sin modificar el flujo principal de uso.
 
 ---
 
-## Flujo de trabajo
+## Flujo general
 
-### Zeres
-
-Dependiendo de la máquina y configuración seleccionada, InjectFlow utiliza los archivos de parámetros correspondientes, por ejemplo:
+El flujo de InjectFlow puede resumirse así:
 
 ```text
-Param.dat
-Resul.csv
+Archivo de máquina
+      ↓
+Selección de máquina
+      ↓
+Parser correspondiente
+      ↓
+Conversión de unidades
+      ↓
+Aplicación de reglas de proceso
+      ↓
+Mapeo de parámetros
+      ↓
+Plantilla Excel
+      ↓
+Hoja de parámetros terminada
 ```
 
-Cuando aplica, `Resul.csv` se utiliza para calcular valores resultantes/promedios configurados por el proyecto.
-
-### Jupiter TwoShot
-
-El flujo de trabajo es:
+Dependiendo de la familia de máquina, la entrada puede ser:
 
 ```text
-XML del molde
-    ↓
-Interpretación de parámetros
-    ↓
-Aplicación de constantes internas de la máquina
-    ↓
-Conversión a valores HMI
-    ↓
-Mapeo a plantilla Excel
-    ↓
-Hoja de parámetros
+.dat
+.xml
+.csv
 ```
 
-El usuario solo selecciona:
-
-1. Máquina.
-2. Número de molde.
-3. Archivo `.xml`.
-
-El número de molde capturado por el usuario se utiliza tal como fue ingresado y no se valida contra el número contenido en el XML.
+El programa determina qué parser y qué reglas utilizar de acuerdo con la máquina seleccionada.
 
 ---
 
-## Conversiones Jupiter
+## Parámetros automatizados
 
-La lógica de Jupiter fue reconstruida utilizando los archivos reales de configuración de las máquinas 308B y 309.
+Dependiendo de la máquina y la plantilla, InjectFlow puede procesar automáticamente:
 
-Entre las conversiones implementadas se encuentran:
-
-- Posición de husillo mediante volumen y carrera.
-- Presión de inyección y sostenimiento mediante relación de áreas hidráulicas.
-- Velocidad de inyección según el transformador HMI configurado por máquina.
-- RPM / velocidad relativa de carga.
-- Clamp Force.
-- Mold Release Pressure.
-- Velocidad de cores.
-- Apertura y cierre de molde.
-- Modos de transferencia.
-- Modos de decompression.
-- Modos y secuencias de cores.
+- Datos generales de máquina.
+- Datos de molde.
+- Apertura de molde.
+- Cierre de molde.
+- Protección de molde.
+- Fuerza de cierre.
+- Inyección.
+- Sostenimiento.
+- Transferencia.
+- Tiempo de inyección.
+- Tiempo de enfriamiento.
+- Dosificación / carga.
+- Contrapresión.
+- RPM o velocidad de rotación.
+- Descompresión.
+- Temperaturas de barril.
+- Hot Runner System (HRS).
 - Valve Gates.
-- HRS.
+- Cores.
 - Mesa rotatoria.
+- Tiempos de secuencia.
+- Modos de operación.
+- Campos activos e inactivos.
+- Totales dinámicos de zonas.
 
-La lógica de 308B y 309 se mantiene separada cuando sus transformadores HMI o constantes son diferentes.
-
----
-
-## Hot Runner System
-
-El programa determina dinámicamente las zonas HRS activas.
-
-Ejemplos validados:
-
-```text
-117B  → TOTAL: 2 ZONAS
-308B  → TOTAL: 16 ZONAS
-309   → TOTAL: 19 ZONAS
-```
-
-`HRSTotalZonesText` es un valor derivado por el programa y no se busca directamente dentro de los archivos `.dat` o `.xml`.
+No todas las máquinas utilizan todas estas funciones.
 
 ---
 
-## Estructura del proyecto
+## Interpretación de datos
+
+Los valores almacenados en los archivos descargados de máquina no siempre están expresados en las mismas unidades que aparecen en el HMI.
+
+Por ello, InjectFlow incluye lógica para:
+
+- Conversión de presión.
+- Conversión de posición.
+- Conversión de velocidad.
+- Conversión de tiempo.
+- Conversión de volumen.
+- Conversión de RPM.
+- Conversión de fuerza.
+- Traducción de estados y modos.
+- Interpretación de perfiles por etapas.
+- Identificación de parámetros activos e inactivos.
+
+Cuando existe información física real de la máquina, las conversiones se basan en esas constantes y no en factores arbitrarios.
+
+---
+
+## Arquitectura del proyecto
 
 ```text
 AutomatizacionParametros_v3.0/
@@ -167,6 +149,7 @@ AutomatizacionParametros_v3.0/
 │   ├── main.py
 │   ├── jupiter_xml_parser.py
 │   ├── catalogs.py
+│   ├── plan.py
 │   └── ...
 │
 ├── data/
@@ -175,11 +158,11 @@ AutomatizacionParametros_v3.0/
 │   └── Moldes.xlsx
 │
 ├── plantillas/
-│   ├── Haitian Jupiter TwoShot_1080.xlsx
 │   ├── Haitian Zeres Gen V.xlsx
 │   ├── Haitian Zeres Gen III_500.xlsx
 │   ├── Haitian Zeres Gen III_800.xlsx
-│   └── Haitian Zeres Gen III_1080.xlsx
+│   ├── Haitian Zeres Gen III_1080.xlsx
+│   └── Haitian Jupiter TwoShot_1080.xlsx
 │
 ├── web/
 │   ├── index.html
@@ -196,6 +179,7 @@ AutomatizacionParametros_v3.0/
 ├── CREAR_INJECTFLOW_EXE.bat
 ├── INSTALAR_DEPENDENCIAS.bat
 ├── InjectFlow.spec
+├── launcher_web.py
 ├── requirements.txt
 ├── requirements-build.txt
 ├── VERSION.txt
@@ -204,20 +188,134 @@ AutomatizacionParametros_v3.0/
 
 ---
 
+## Componentes principales
+
+### `app/`
+
+Contiene la lógica principal del programa:
+
+- Lectura de archivos.
+- Parsers.
+- Conversión de datos.
+- Selección de plantilla.
+- Construcción del plan de escritura.
+- Aplicación de reglas de proceso.
+- Comunicación con la interfaz.
+
+### `data/Data.xlsx`
+
+Contiene el catálogo lógico del sistema:
+
+- Parámetros.
+- Claves de origen.
+- Transformaciones.
+- State Maps.
+- Reglas de conversión.
+- Constantes de máquina.
+- Configuración de comportamiento.
+
+### `data/Mapeo.xlsx`
+
+Define dónde debe escribirse cada parámetro en cada plantilla.
+
+También contiene reglas relacionadas con:
+
+- Activación de campos.
+- Sombreado.
+- HRS.
+- Cores.
+- Valve Gates.
+- Secciones dinámicas.
+- Referencias de formato.
+
+### `data/Moldes.xlsx`
+
+Catálogo auxiliar de moldes.
+
+Puede utilizarse para completar información adicional, pero el programa no requiere que todos los moldes existan previamente en este archivo.
+
+El número de molde ingresado por el usuario se respeta como valor principal.
+
+### `plantillas/`
+
+Contiene las hojas Excel oficiales utilizadas para generar los documentos finales.
+
+Las plantillas deben conservar:
+
+- Celdas combinadas.
+- Formatos.
+- Bordes.
+- Fórmulas.
+- Rellenos.
+- Escala.
+- Área de impresión.
+- Etiquetas fijas.
+
+La lógica del programa debe adaptarse a la plantilla, no al contrario.
+
+### `web/`
+
+Contiene la interfaz visual de InjectFlow:
+
+- HTML.
+- CSS.
+- JavaScript.
+- Imágenes y recursos.
+
+Estos archivos deben permanecer junto al ejecutable cuando se distribuye la aplicación.
+
+---
+
+## Hot Runner System
+
+InjectFlow determina dinámicamente las zonas HRS activas.
+
+El texto de total de zonas se calcula internamente a partir del estado real de las zonas.
+
+Ejemplo:
+
+```text
+TOTAL: 2 ZONAS
+TOTAL: 16 ZONAS
+TOTAL: 19 ZONAS
+```
+
+Este valor no se busca directamente en el archivo de máquina.
+
+---
+
+## Campos activos e inactivos
+
+El programa controla visualmente los campos que aplican al proceso.
+
+Cuando un parámetro está activo:
+
+- Se habilita visualmente.
+- Se escribe el valor correspondiente.
+
+Cuando no aplica:
+
+- Puede dejarse vacío.
+- Puede conservar o recibir relleno gris según la plantilla.
+
+Cada plantilla tiene referencias de formato definidas en `Mapeo.xlsx`.
+
+---
+
 ## Requisitos
 
-- Windows 10/11.
-- Python 3.x.
-- Microsoft Excel instalado para el flujo de escritura basado en Excel COM.
+- Windows 10 o Windows 11.
+- Python 3.x para ejecución desde código fuente.
+- Microsoft Excel instalado para las operaciones que requieren Excel COM.
 - Dependencias indicadas en `requirements.txt`.
 
-Para instalar dependencias:
+Instalación:
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-O ejecutar:
+También puede utilizarse:
 
 ```text
 INSTALAR_DEPENDENCIAS.bat
@@ -234,7 +332,7 @@ cd "C:\ruta\al\proyecto\AutomatizacionParametros_v3.0"
 python launcher_web.py
 ```
 
-También puede utilizarse:
+O ejecutar:
 
 ```text
 ABRIR_INJECTFLOW.bat
@@ -244,13 +342,15 @@ ABRIR_INJECTFLOW.bat
 
 ## Crear el ejecutable
 
-Ejecutar:
+Para generar la versión distribuible:
 
 ```text
 CREAR_INJECTFLOW_EXE.bat
 ```
 
-El proceso utiliza PyInstaller y genera:
+El proceso utiliza PyInstaller.
+
+La salida esperada es:
 
 ```text
 dist/
@@ -264,148 +364,95 @@ dist/
     └── output/
 ```
 
-> **Importante:** para distribuir InjectFlow debe copiarse la carpeta completa `dist\InjectFlow`, no solamente `InjectFlow.exe`.
+### Importante
 
-El ejecutable necesita conservar junto a él los recursos externos de:
+Debe distribuirse la carpeta completa:
 
-- `data/`
-- `plantillas/`
-- `web/`
+```text
+dist\InjectFlow
+```
 
-El batch de Release 3.0 valida que estos recursos hayan sido copiados correctamente.
+No solamente:
+
+```text
+InjectFlow.exe
+```
+
+La aplicación necesita los recursos externos ubicados en:
+
+```text
+data/
+plantillas/
+web/
+```
+
+El batch de compilación valida que estos recursos hayan sido copiados correctamente.
 
 ---
 
-## Archivos principales de configuración
+## Validación y pruebas
 
-### `data/Data.xlsx`
-
-Contiene:
-
-- Reglas de parámetros.
-- Transformaciones.
-- State Maps.
-- Configuración por familia.
-- Constantes internas de Jupiter.
-- Reglas derivadas.
-
-### `data/Mapeo.xlsx`
-
-Define:
-
-- Destino de cada parámetro en las plantillas.
-- Reglas de activación.
-- Reglas de sombreado.
-- Lógica de cores.
-- Lógica de zonas.
-- Referencias visuales.
-
-Para la plantilla Jupiter final:
+El proyecto contiene pruebas automatizadas dentro de:
 
 ```text
-G17 = referencia de campo activo / sin relleno
-G20 = referencia de campo inactivo / gris #7F7F7F
+tests/
 ```
 
-### `data/Moldes.xlsx`
+Las pruebas cubren, entre otros:
 
-Catálogo auxiliar de moldes y datos asociados.
+- Parsers.
+- Conversiones.
+- Catálogos.
+- Mapeos.
+- Plan de escritura.
+- Lógica dinámica.
+- Compatibilidad entre familias.
+- Preview.
+- Regresión.
 
-La existencia de un número de molde en este catálogo no es obligatoria para generar una hoja.
+Además de las pruebas automáticas, cada nueva máquina debe validarse con:
+
+1. Archivo real descargado de la máquina.
+2. Hoja de parámetros o HMI de referencia.
+3. Comparación de valores generados.
+4. Prueba final en Windows con Microsoft Excel.
 
 ---
 
-## Plantilla Jupiter
+## Incorporación de nuevas máquinas
 
-La plantilla oficial es:
+Para agregar una nueva máquina al sistema se recomienda:
 
-```text
-Haitian Jupiter TwoShot_1080.xlsx
-```
-
-Las etiquetas físicas de Injection/Hold:
-
-```text
-1
-2
-3
-End
-```
-
-forman parte de la plantilla y no deben ser escritas ni borradas por el programa.
-
-Los campos inactivos utilizan:
-
-```text
-#7F7F7F
-```
+1. Obtener un archivo de parámetros real.
+2. Obtener una hoja de referencia validada.
+3. Identificar la familia y generación.
+4. Analizar unidades internas.
+5. Identificar constantes físicas si son necesarias.
+6. Definir o reutilizar parser.
+7. Agregar reglas a `Data.xlsx`.
+8. Agregar mapeos a `Mapeo.xlsx`.
+9. Validar la plantilla.
+10. Ejecutar pruebas de regresión.
+11. Habilitar la máquina únicamente después de confirmar los resultados.
 
 ---
 
-## Validación de Release 3.0
+## Reglas de mantenimiento del proyecto
 
-La versión fue validada utilizando archivos reales de proceso de las máquinas soportadas.
+Para evitar regresiones:
 
-### 308B / I-1689
-
-Se validaron:
-
-- XML real.
-- Cores A/B.
-- HRS.
-- Valve Gates.
-- Injection 1 / Injection 2.
-- Mesa rotatoria.
-- Transferencia.
-- Charge.
-- Decompression.
-
-### 309 / I-1695
-
-Se validaron:
-
-- XML real.
-- Cores A/B.
-- HRS.
-- 9 Valve Gates activas.
-- Injection 1 / Injection 2.
-- Mesa rotatoria.
-- Transferencia.
-- Charge.
-- Decompression.
-
-También se realizó regresión sobre máquinas Zeres para evitar que la lógica Jupiter interfiera con las familias existentes.
+- No modificar una plantilla oficial sin revisar `Mapeo.xlsx`.
+- No utilizar factores empíricos si existe una constante real de máquina.
+- Mantener separada la lógica específica por familia.
+- No asumir que todas las generaciones utilizan las mismas conversiones.
+- Mantener los campos fijos dentro de la plantilla cuando corresponda.
+- Probar una familia después de modificar otra.
+- Ejecutar pruebas antes de publicar una nueva versión.
+- Probar nuevamente la creación del `.exe` después de modificar recursos web o configuración de PyInstaller.
 
 ---
 
-## Correcciones posteriores al tag v3.0
-
-Después del tag inicial `v3.0` se incorporaron correcciones en `main`.
-
-### HRS Total Zones
-
-Se corrigió una condición donde una máquina Zeres podía intentar resolver:
-
-```text
-Jupiter.HRSTotalZonesText
-```
-
-La lógica actual calcula este valor después de interpretar las zonas HRS y no lo solicita directamente al archivo de máquina.
-
-### Build del EXE
-
-Se corrigió `CREAR_INJECTFLOW_EXE.bat` para garantizar que `dist\InjectFlow` incluya:
-
-- `web/`
-- `data/`
-- `plantillas/`
-- recursos estáticos necesarios.
-
-El batch también elimina un build incompleto si ocurre un error durante la copia de recursos.
-
----
-
-## Git / GitHub
+## Control de versiones
 
 Repositorio:
 
@@ -419,43 +466,46 @@ Rama principal:
 main
 ```
 
-Tag principal:
+Release principal:
 
 ```text
 v3.0
 ```
 
-Para revisar el estado local:
+Flujo recomendado para cambios:
 
 ```powershell
 git status
-```
-
-Para actualizar GitHub después de realizar cambios:
-
-```powershell
 git add <archivos>
 git commit -m "Descripción del cambio"
 git push origin main
 ```
 
----
-
-## Recomendaciones de desarrollo
-
-Antes de modificar el proyecto:
-
-1. Crear respaldo o commit.
-2. No modificar plantillas validadas sin confirmar el impacto en `Mapeo.xlsx`.
-3. Mantener separada la lógica Zeres y Jupiter.
-4. No introducir factores de conversión empíricos si existe una constante real de máquina.
-5. Ejecutar pruebas de regresión después de modificar parser, resolver, mapeo o plantillas.
-6. Probar el EXE después de cualquier cambio en `web`, PyInstaller o el batch de compilación.
+Los cambios posteriores al tag `v3.0` pueden mantenerse como correcciones sobre `main` hasta que se defina una nueva versión.
 
 ---
 
-## Estado actual
+## Estado del proyecto
 
-InjectFlow v3.0 permite generar hojas de parámetros de proceso para familias Haitian Zeres y Haitian Jupiter TwoShot utilizando los archivos descargados de las máquinas y las reglas de conversión/mapeo validadas durante el desarrollo.
+InjectFlow v3.0 se encuentra operativo para la generación automatizada de hojas de parámetros en las familias actualmente soportadas.
 
-El proyecto continúa en evolución y cualquier nueva máquina debe validarse contra su archivo real de proceso y una hoja HMI de referencia antes de habilitarse para uso normal.
+El enfoque del proyecto es mantener una plataforma extensible donde nuevas máquinas puedan integrarse mediante:
+
+```text
+Parser
++ Reglas
++ Mapeo
++ Plantilla
++ Validación
+```
+
+sin reconstruir la aplicación completa para cada nuevo modelo.
+
+---
+
+## Autor
+
+**Ing. José Antonio Guzmán Trujillo**  
+Becario de Procesos  
+CAZEL  
+tecnicosprocesos@cazel.mx
