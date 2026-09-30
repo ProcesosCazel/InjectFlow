@@ -507,5 +507,5 @@ sin reconstruir la aplicación completa para cada nuevo modelo.
 
 **Ing. José Antonio Guzmán Trujillo**  
 Becario de Procesos  
-CAZEL  
+INDUSTRIAS CAZEL  
 tecnicosprocesos@cazel.mx
