@@ -305,7 +305,16 @@ def run(args: argparse.Namespace) -> int:
         )
     param_records = param_parser.parse(args.param)
     resolver = DataResolver(data)
-    param_values = resolver.resolve_param(param_records, required_keys=required_keys)
+
+    # Derived logical keys are calculated by InjectFlow after the machine export
+    # has been normalized.  They must never be requested directly from Param.dat
+    # or from a Jupiter XML record.  Keeping them out of DataResolver also prevents
+    # a family-specific source rule from leaking into another machine family
+    # (for example Jupiter.HRSTotalZonesText being requested from a Zeres .dat).
+    resolver_required_keys = set(required_keys).difference(DERIVED_PARAM_KEYS)
+    param_values = resolver.resolve_param(
+        param_records, required_keys=resolver_required_keys
+    )
     if "HRSTotalZonesText" in required_keys:
         param_values["HRSTotalZonesText"] = _hrs_total_zones_text(param_values)
     process_warnings_list = list(param_parser.process_warnings)
