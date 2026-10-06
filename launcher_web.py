@@ -36,6 +36,83 @@ WINDOW_MIN_SIZE = (720, 520)
 WINDOW_BACKGROUND = "#eef2f7"
 
 
+def _bring_native_form_to_front(form: Any, maximized_state: Any) -> None:
+    """Maximize and activate a native WinForms form on its UI thread.
+
+    This helper deliberately works with the native form instead of changing
+    ``window.on_top`` from a pywebview lifecycle event. In pywebview 6.2.1,
+    normal lifecycle handlers run on worker threads while the WinForms
+    ``set_on_top`` backend writes ``TopMost`` directly. Keeping the full
+    topmost/activation sequence inside the native ``Shown`` event avoids
+    cross-thread UI access.
+    """
+
+    form.WindowState = maximized_state
+
+    # Temporarily toggle TopMost to make Windows raise the newly-created form.
+    # It is disabled again before returning, so InjectFlow behaves like a
+    # normal application immediately after startup.
+    form.TopMost = True
+    form.BringToFront()
+    form.Activate()
+    form.TopMost = False
+    form.BringToFront()
+    form.Activate()
+
+
+def _install_windows_startup_focus(window: Any, *, winforms: Any = None) -> bool:
+    """Install the one-shot Windows startup focus behavior safely.
+
+    ``before_show`` is a synchronous pywebview event and exposes
+    ``window.native``. We use it to subscribe directly to the native WinForms
+    ``Shown`` event, whose callback runs on the WinForms UI thread.
+
+    Returns ``True`` when the Windows-specific handler was installed. On other
+    platforms (or if WinForms is unavailable) the normal pywebview
+    ``maximized=True`` / ``focus=True`` behavior remains in effect.
+    """
+
+    if sys.platform != "win32":
+        return False
+
+    form = getattr(window, "native", None)
+    if form is None:
+        return False
+
+    try:
+        if winforms is None:
+            gui = getattr(window, "gui", None)
+            winforms = getattr(gui, "WinForms", None)
+            if winforms is None:
+                return False
+
+        maximized_state = winforms.FormWindowState.Maximized
+
+        # Reaffirm the desired state before the form becomes visible. This is
+        # done directly on the native UI thread because before_show is blocking.
+        form.WindowState = maximized_state
+
+        handled = False
+
+        def on_native_shown(sender: Any, _event_args: Any) -> None:
+            nonlocal handled
+            if handled:
+                return
+            handled = True
+            _bring_native_form_to_front(sender, maximized_state)
+
+        form.Shown += on_native_shown
+        return True
+    except Exception as exc:
+        # Startup must never fail merely because foreground activation could not
+        # be installed. PyWebView's built-in maximize/focus flags remain active.
+        print(
+            f"[InjectFlow] No se pudo instalar el foco de arranque de Windows: {exc}",
+            file=sys.stderr,
+        )
+        return False
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="InjectFlow v3.0 - Launcher PyWebView",
@@ -313,8 +390,14 @@ def main() -> int:
             background_color=WINDOW_BACKGROUND,
             text_select=True,
             zoomable=False,
+            maximized=True,
+            focus=True,
+            on_top=False,
         )
         api._attach_window(window)
+
+        def on_before_show(window) -> None:
+            _install_windows_startup_focus(window)
 
         def on_initialized(renderer) -> None:
             api._set_renderer(renderer)
@@ -334,6 +417,7 @@ def main() -> int:
                 _python_signal(api),
             )
 
+        window.events.before_show += on_before_show
         window.events.initialized += on_initialized
         window.events.loaded += on_loaded
 

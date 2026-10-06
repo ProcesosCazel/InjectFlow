@@ -2,68 +2,130 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from openpyxl import Workbook
+
 from app.catalogs import MappingCatalog
 from app.mold_catalog import MoldCatalog
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MOLDS = ROOT / "data" / "Moldes.xlsx"
 MAPPING = ROOT / "data" / "Mapeo.xlsx"
 
 
-def test_mold_catalog_expected_known_examples() -> None:
-    catalog = MoldCatalog(MOLDS)
+def _build_test_molds_xlsx(tmp_path: Path) -> Path:
+    """Create a stable Moldes.xlsx fixture independent of production master data."""
 
-    i1004 = catalog.resolve("I-1004")
-    assert i1004 is not None
-    assert i1004.internal_code == "VOL10R003 / VOL10R004"
-    assert i1004.customer_part_number == "1C0809961G / 1C0809962J"
-    assert i1004.description == "ARMAZON PASARRUEDA"
-    assert i1004.qad_cycle_time == 57
-    assert i1004.cavities == "1+1"
+    path = tmp_path / "Moldes.xlsx"
+    wb = Workbook()
 
-    i1027 = catalog.resolve("I-1027")
-    assert i1027 is not None
-    assert i1027.internal_code == "ENS/63820 / ENS/63821"
-    assert i1027.customer_part_number == ""
-    assert i1027.description == "SEAL FRNT DOOR RH / LH"
-    assert i1027.qad_cycle_time == 30
-    assert i1027.cavities == "2+2"
+    ws = wb.active
+    ws.title = "Moldes"
+    ws.append(
+        [
+            "Molde",
+            "Numero articulo",
+            "Descripción",
+            "Art Cliente",
+            "Tiempo Ciclo",
+            "Cliente",
+        ]
+    )
+
+    # I-9000 validates aggregation while preserving file order.
+    ws.append(["I-9000", "ART001", "PIEZA 1", "PN-001", 50, "FAURECIA"])
+    ws.append(["I-9000", "ART002", "PIEZA 2", "PN-002", 55, "ADIENT"])
+    ws.append(["I-9000", "ART003", "PIEZA 3", "PN-003", 52, "VOLKSWAGEN"])
+    ws.append(["I-9000", "ART004", "PIEZA 4", "PN-004", 55, "LEAR"])
+
+    # Duplicate exact row must not be repeated in the resolved output.
+    ws.append(["I-9000", "ART004", "PIEZA 4", "PN-004", 55, "LEAR"])
+
+    # I-9001 validates description abbreviation and empty customer part numbers.
+    ws.append(["I-9001", "ENS/001", "SEAL FRNT DOOR RH", "", 30, "CUSTOMER A"])
+    ws.append(["I-9001", "ENS/002", "SEAL FRNT DOOR LH", "", 28, "CUSTOMER A"])
+
+    # I-9002 exists in the main table but intentionally has no CAVS row.
+    ws.append(["I-9002", "ART010", "NO CAVITY DATA", "PN-010", 40, "CUSTOMER B"])
+
+    # Invalid mold numbers must be ignored by the catalog loader.
+    ws.append(["9003", "BAD001", "INVALID MOLD", "BAD-PN", 99, "SHOULD NOT LOAD"])
+
+    cavs = wb.create_sheet("CAVS")
+    cavs.append(["Molde", "CAVS"])
+    cavs.append(["I-9000", "1 + 1"])
+    cavs.append(["I-9000", "1+1"])
+    cavs.append(["I-9001", "2+2"])
+
+    wb.save(path)
+    wb.close()
+    return path
 
 
-def test_mold_catalog_uses_maximum_qad_cycle_time() -> None:
-    catalog = MoldCatalog(MOLDS)
+def test_mold_catalog_expected_known_examples(tmp_path: Path) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
 
-    assert catalog.resolve("I-1137").qad_cycle_time == 28  # type: ignore[union-attr]
-    assert catalog.resolve("I-1163").qad_cycle_time == 129  # type: ignore[union-attr]
-    assert catalog.resolve("I-1599").qad_cycle_time == 138  # type: ignore[union-attr]
+    mold = catalog.resolve("I-9001")
+    assert mold is not None
+    assert mold.internal_code == "ENS/001 / ENS/002"
+    assert mold.customer_part_number == ""
+    assert mold.description == "SEAL FRNT DOOR RH / LH"
+    assert mold.qad_cycle_time == 30
+    assert mold.customer == "CUSTOMER A"
+    assert mold.cavities == "2+2"
 
 
-def test_mold_catalog_preserves_multiple_customers_without_guessing() -> None:
-    catalog = MoldCatalog(MOLDS)
-    result = catalog.resolve("I-1270")
+def test_mold_catalog_uses_maximum_qad_cycle_time(tmp_path: Path) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
+
+    result = catalog.resolve("I-9000")
+    assert result is not None
+    assert result.qad_cycle_time == 55
+
+
+def test_mold_catalog_preserves_multiple_customers_without_guessing(
+    tmp_path: Path,
+) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
+    result = catalog.resolve("I-9000")
 
     assert result is not None
-    assert result.customer == "FAURECIA / ADIENT / VOLKSWAGEN"
+    assert result.customer == "FAURECIA / ADIENT / VOLKSWAGEN / LEAR"
 
 
-def test_mold_catalog_cavities_are_optional_and_normalized() -> None:
-    catalog = MoldCatalog(MOLDS)
+def test_mold_catalog_preserves_unique_values_and_ignores_exact_duplicates(
+    tmp_path: Path,
+) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
+    result = catalog.resolve("I-9000")
 
-    # CAVS contiene dos registros equivalentes: "1+1" y "1 + 1".
-    assert catalog.resolve("I-1654").cavities == "1+1"  # type: ignore[union-attr]
+    assert result is not None
+    assert result.internal_code == "ART001 / ART002 / ART003 / ART004"
+    assert result.customer_part_number == "PN-001 / PN-002 / PN-003 / PN-004"
+    assert result.description == "PIEZA 1 / 2 / 3 / 4"
 
-    # El molde existe en la tabla principal, pero no existe en CAVS.
-    assert catalog.resolve("I-1139").cavities == ""  # type: ignore[union-attr]
+
+def test_mold_catalog_cavities_are_optional_and_normalized(tmp_path: Path) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
+
+    # Equivalent CAVS values are normalized and consolidated.
+    result_with_cavs = catalog.resolve("I-9000")
+    assert result_with_cavs is not None
+    assert result_with_cavs.cavities == "1+1"
+
+    # Mold exists in the main table but not in CAVS.
+    result_without_cavs = catalog.resolve("I-9002")
+    assert result_without_cavs is not None
+    assert result_without_cavs.cavities == ""
 
 
-def test_mold_catalog_rejects_invalid_or_unknown_mold_number() -> None:
-    catalog = MoldCatalog(MOLDS)
+def test_mold_catalog_rejects_invalid_or_unknown_mold_number(tmp_path: Path) -> None:
+    catalog = MoldCatalog(_build_test_molds_xlsx(tmp_path))
 
     assert catalog.resolve("I-9999") is None
-    assert catalog.resolve("1004") is None
-    assert catalog.resolve("I-100") is None
-    assert catalog.resolve("I-1004A") is None
+    assert catalog.resolve("9000") is None
+    assert catalog.resolve("I-900") is None
+    assert catalog.resolve("I-9000A") is None
+    assert catalog.resolve("9003") is None
 
 
 def test_mold_mapping_is_present_in_all_four_layouts_and_qad_is_separate() -> None:
