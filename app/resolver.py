@@ -7,6 +7,7 @@ from typing import Any
 from .catalogs import DataCatalog, ParamRule, ResulRule
 from .errors import ConfigurationError, MissingParameterError, SourceDataError
 from .parsers import ParamRecord
+from .input_policy import JUPITER_GROUP
 from .utils import as_decimal, normalize_control_value, round_decimal
 
 
@@ -28,12 +29,28 @@ class DataResolver:
         self,
         records: dict[str, list[ParamRecord]],
         required_keys: set[str] | None = None,
+        *,
+        template_group: str | None = None,
     ) -> dict[str, Any]:
+        """Resolve only sources belonging to the selected machine family.
+
+        Jupiter's normalized records share logical keys with Zeres, but are not
+        fallback sources for a DAT export (nor vice versa). Production callers
+        must pass the template group. None retains the legacy unscoped API for
+        tools/tests that deliberately resolve a standalone catalog.
+        """
         self.parameter_warnings = []
         direct_by_key: dict[str, list[ParamRule]] = defaultdict(list)
         derived: list[ParamRule] = []
-        expanded_required = self._expand_required(required_keys) if required_keys is not None else None
-        for rule in self.data.param_rules:
+        applicable_rules = tuple(
+            rule for rule in self.data.param_rules
+            if self._param_rule_matches_group(rule, template_group)
+        )
+        expanded_required = (
+            self._expand_required(required_keys, param_rules=applicable_rules)
+            if required_keys is not None else None
+        )
+        for rule in applicable_rules:
             if not rule.active:
                 continue
             if expanded_required is not None and rule.key not in expanded_required:
@@ -45,6 +62,17 @@ class DataResolver:
 
         values: dict[str, Any] = {}
         unavailable: set[str] = set()
+        if template_group and expanded_required is not None:
+            # Do not silently lose a mapped key that only has rules belonging
+            # to the other family. Manual/Mold/Resul-only keys are not Param keys.
+            all_param_keys = {r.key for r in self.data.param_rules if r.active}
+            applicable_keys = {r.key for r in applicable_rules if r.active}
+            wrong_family_keys = (expanded_required & all_param_keys) - applicable_keys
+            for key in sorted(wrong_family_keys):
+                unavailable.add(key)
+                self._add_parameter_warning(
+                    f"{key}: no applicable Param rule for family {template_group}"
+                )
         for key, rules in direct_by_key.items():
             try:
                 values[key] = self._resolve_param_key(key, rules, records)
@@ -91,6 +119,14 @@ class DataResolver:
             pending = still_pending
 
         return values
+
+    @staticmethod
+    def _param_rule_matches_group(rule: ParamRule, template_group: str | None) -> bool:
+        if not template_group or rule.source.upper() != "PARAM.DAT":
+            return True
+        is_jupiter_rule = (rule.source_name or "").startswith("Jupiter.")
+        is_jupiter_group = str(template_group).strip().upper() == JUPITER_GROUP
+        return is_jupiter_rule == is_jupiter_group
 
     def _add_parameter_warning(self, message: str) -> None:
         text = str(message).strip()
@@ -184,12 +220,18 @@ class DataResolver:
             return value
         raise ConfigurationError(f"Unsupported derived Param CALC TYPE {calc!r} for {rule.key}")
 
-    def _expand_required(self, required_keys: set[str]) -> set[str]:
+    def _expand_required(
+        self,
+        required_keys: set[str],
+        *,
+        param_rules: tuple[ParamRule, ...] | None = None,
+    ) -> set[str]:
         expanded = set(required_keys)
+        selected_param_rules = self.data.param_rules if param_rules is None else param_rules
         changed = True
         while changed:
             changed = False
-            for rule in (*self.data.param_rules, *self.data.resul_rules):
+            for rule in (*selected_param_rules, *self.data.resul_rules):
                 if rule.key in expanded:
                     for dep in rule.dependency:
                         if dep not in expanded:

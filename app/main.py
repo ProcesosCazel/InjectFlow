@@ -15,7 +15,7 @@ from .history import append_generation_history, build_dynamic_output_path
 from .mold_catalog import MoldCatalog
 from .input_policy import JUPITER_GROUP, policy_for_group
 from .jupiter_xml_parser import JupiterXmlParser
-from .parsers import ParamDatParser, ResulCsvParser
+from .parsers import ParamDatParser, ParamRecord, ResulCsvParser
 from .plan import GenerationPlan, Operation, PlanBuilder
 from .plan_debug import write_plan_csv
 from .report import write_report
@@ -220,6 +220,52 @@ def _filter_required_keys_for_machine_quirks(
     return result
 
 
+
+_ZERES_GROUPS = frozenset({"HAITIAN_ZE_V", "HAITIAN_ZE_III"})
+_VALVE_GATE_LOGICAL_RE = re.compile(r"^ValveGate([1-9]\d*)[A-Za-z]")
+_VALVE_GATE_SOURCE_RE = re.compile(
+    r"^(?:Valvegate|SecondValveGate)([1-9]\d*)\.", re.IGNORECASE
+)
+
+
+def _filter_required_keys_for_available_valve_gates(
+    required_keys: set[str],
+    records: dict[str, list[ParamRecord]],
+    group: str,
+) -> set[str]:
+    """Exclude wholly absent optional Zeres extension blocks, not missing fields.
+
+    Gen III/V templates describe several controller capacities. The presence of
+    the eight base selectors establishes the DAT layout; raw index 9 remains
+    reserved and is handled by the existing planner. Optional raw indices >=10
+    are requested only if *any* primary or secondary field is exported for them.
+    A partial block still reaches the resolver so missing selectors/parameters
+    remain visible warnings. An absent block is not synthesized as OFF or zero.
+
+    With an incomplete base bank, no filtering is performed: the export may be
+    damaged or unsupported. Jupiter's direct 1..48 numbering is never filtered.
+    """
+    result = set(required_keys)
+    if str(group).strip().upper() not in _ZERES_GROUPS:
+        return result
+    if not all(records.get(f"Valvegate{gate}.sFunction") for gate in range(1, 9)):
+        return result
+
+    exported_gates = {
+        int(match.group(1))
+        for source_name in records
+        if (match := _VALVE_GATE_SOURCE_RE.match(source_name))
+    }
+    for key in required_keys:
+        match = _VALVE_GATE_LOGICAL_RE.match(key)
+        if not match:
+            continue
+        gate = int(match.group(1))
+        if gate >= 10 and gate not in exported_gates:
+            result.discard(key)
+    return result
+
+
 def run(args: argparse.Namespace) -> int:
     data = DataCatalog(args.data)
     mapping = MappingCatalog(args.mapping)
@@ -312,8 +358,17 @@ def run(args: argparse.Namespace) -> int:
     # a family-specific source rule from leaking into another machine family
     # (for example Jupiter.HRSTotalZonesText being requested from a Zeres .dat).
     resolver_required_keys = set(required_keys).difference(DERIVED_PARAM_KEYS)
+    valve_gate_required_keys = _filter_required_keys_for_available_valve_gates(
+        resolver_required_keys, param_records, group
+    )
+    omitted_valve_gate_blocks = sorted({
+        int(_VALVE_GATE_LOGICAL_RE.match(key).group(1))
+        for key in resolver_required_keys - valve_gate_required_keys
+    })
     param_values = resolver.resolve_param(
-        param_records, required_keys=resolver_required_keys
+        param_records,
+        required_keys=valve_gate_required_keys,
+        template_group=group,
     )
     if "HRSTotalZonesText" in required_keys:
         param_values["HRSTotalZonesText"] = _hrs_total_zones_text(param_values)
@@ -402,6 +457,11 @@ def run(args: argparse.Namespace) -> int:
         "Valve Gates activos: "
         + (", ".join(str(g) for g in plan.active_valve_gates) if plan.active_valve_gates else "NINGUNO")
     )
+    if omitted_valve_gate_blocks:
+        print(
+            "Valve Gates opcionales no exportados (indices RAW): "
+            + ", ".join(str(gate) for gate in omitted_valve_gate_blocks)
+        )
     print(f"Operaciones planeadas: {len(plan.operations)}")
     print(f"Plan detallado: {args.plan_csv}")
     if process_warnings:
