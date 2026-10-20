@@ -36,7 +36,8 @@ class JupiterXmlParser:
     MAX_HRS_ZONES = 54
     MAX_CORES = 2
     MAX_VALVE_GATE_RAW = 48
-    MAX_VALVE_GATE_ACTIVE = 9
+    # Physical sequencer rows 66..77; raw XML gate numbering remains 1..48.
+    MAX_VALVE_GATE_ACTIVE = 12
 
     # Verified fallback constants from the official 308B/309 machine-data bases.
     # Production runs receive the same values from Data.xlsx/MachineConstants;

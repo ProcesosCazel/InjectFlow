@@ -152,9 +152,12 @@ def test_jupiter_modes_use_jupiter_position_time_map_not_zeres(catalogs, values)
     assert any(o.cell==stop_cell and o.kind=='WRITE' and o.value=='POSITION' for o in plan.operations)
 
 
-def test_jupiter_over_nine_active_gates_blocks(catalogs, values):
-    for n in range(1,11): values[f'ValveGate{n}State']='ON'
-    with pytest.raises(ProcessWarning): build(catalogs, values)
+def test_jupiter_over_twelve_active_gates_blocks(catalogs, values):
+    # Reset fixture selectors so the boundary is exactly 13, not incidental.
+    for n in range(1, 49):
+        values[f'ValveGate{n}State'] = 'ON' if n <= 13 else 'OFF'
+    with pytest.raises(ProcessWarning, match='solo admite 12'):
+        build(catalogs, values)
 
 
 def test_plan_does_not_touch_resultants_or_fixed_tolerance_merges(catalogs, values):
